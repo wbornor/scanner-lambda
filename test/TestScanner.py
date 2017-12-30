@@ -1,7 +1,6 @@
 import scanner
 from config import config
 import unittest
-import json
 
 __sns__ = {'Records': [{'EventSource': 'aws:sns', 'EventVersion': '1.0',
                         'EventSubscriptionArn': 'arn:aws:sns:EXAMPLE',
@@ -19,7 +18,7 @@ __sns__ = {'Records': [{'EventSource': 'aws:sns', 'EventVersion': '1.0',
 
 
 class TestScanner(unittest.TestCase):
-    # @unittest.skip
+    @unittest.skip
     def testSNSMessageTriggersHandler(self):
         event = __sns__
         scanner.handler(event, None)
@@ -34,6 +33,15 @@ class TestScanner(unittest.TestCase):
         fields = scanner.enrichupc('011110672698')
         self.assertEqual(fields['brand_nm'], 'Kroger')
         self.assertEqual(fields['gtin_nm'], 'Peanut Butter')
+
+    # @unittest.skip('external dependencies')
+    def testEnrichUPCNoMatch(self):
+        fields = scanner.enrichupc('012345678901')
+        self.assertIsNone(fields)
+
+    @unittest.skip('external dependencies')
+    def testTriggerIfttt(self):
+        scanner.trigger_ifttt('011110672698', 'Kroger', 'Peanut Butter')
 
 if __name__ == '__main__':
     unittest.main()
